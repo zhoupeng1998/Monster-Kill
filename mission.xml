@@ -8,20 +8,31 @@
     <ServerSection>
         <ServerInitialConditions>
             <Time>
-                <StartTime>6000</StartTime>
+                <StartTime>18000</StartTime>
                 <AllowPassageOfTime>false</AllowPassageOfTime>
             </Time>
             <Weather>clear</Weather>
             <AllowSpawning>true</AllowSpawning>
         </ServerInitialConditions>
         <ServerHandlers>
-            <FlatWorldGenerator generatorString="3;7,220*1,5*3,2;3;,biome_1"/>
+            <FlatWorldGenerator generatorString="3;7,1*1,5*3,2;3;,biome_1"/>
             <DrawingDecorator>
-                <DrawCuboid type="bedrock" x1="15" y1="230" z1="20" x2="36" y2="240" z2="41"/>
+                <DrawCuboid type="glowstone" x1="15" y1="230" z1="20" x2="36" y2="240" z2="41"/>
+                <DrawCuboid type="glowstone" x1="15" y1="241" z1="20" x2="36" y2="241" z2="41"/>
                 <DrawCuboid type="air" x1="16" y1="231" z1="21" x2="35" y2="240" z2="39"/>
-                <DrawEntity type="Pig" x="25.5" y="231" z="35"/>
+                <DrawBlock type="fence" x="24" y="231" z="33"/>
+                <DrawBlock type="fence" x="25" y="231" z="33"/>
+                <DrawBlock type="fence" x="26" y="231" z="33"/>
+                <DrawBlock type="fence" x="24" y="231" z="36"/>
+                <DrawBlock type="fence" x="25" y="231" z="36"/>
+                <DrawBlock type="fence" x="26" y="231" z="36"/>
+                <DrawBlock type="fence" x="24" y="231" z="34"/>
+                <DrawBlock type="fence" x="26" y="231" z="34"/>
+                <DrawBlock type="fence" x="24" y="231" z="35"/>
+                <DrawBlock type="fence" x="26" y="231" z="35"/>
+                <DrawEntity type="Villager" x="25.5" y="231" z="36"/>
             </DrawingDecorator>  
-            <ServerQuitFromTimeUp description="" timeLimitMs="0"/>
+            <ServerQuitFromTimeUp description="" timeLimitMs="1000"/>
             <ServerQuitWhenAnyAgentFinishes/>
         </ServerHandlers>
     </ServerSection>
@@ -29,13 +40,14 @@
     <AgentSection mode="Survival">
         <Name>Monster Killer</Name>
         <AgentStart>
-            <Placement pitch="0" x="25.5" y="231" yaw="0" z="25"/>
+            <Placement pitch="0" x="25.5" y="231" yaw="0" z="34.5"/>
             <Inventory>
                 <InventoryItem slot="0" type="bow"/>
                 <InventoryItem slot="1" type="wooden_sword"/>
-                <InventoryItem slot="2" type="iron_sword"/>
-                <InventoryItem slot="3" type="golden_sword"/>
-                <InventoryItem slot="4" type="diamond_sword"/>
+                <InventoryItem slot="2" type="stone_sword"/>
+                <InventoryItem slot="3" type="iron_sword"/>
+                <InventoryItem slot="4" type="golden_sword"/>
+                <InventoryItem slot="5" type="diamond_sword"/>
                 <InventoryItem slot="9" type="arrow" quantity="20"/>
                 <InventoryItem slot="10" type="arrow" quantity="20"/>
                 <InventoryItem slot="11" type="arrow" quantity="20"/>
@@ -46,7 +58,8 @@
         <AgentHandlers>
             <ContinuousMovementCommands turnSpeedDegs="180"/>
             <ObservationFromFullStats/>
-            <VideoProducer want_depth="false" viewpoint="0">
+            <!--<ObservationFromRay/>-->
+            <VideoProducer want_depth="true" viewpoint="0">
                 <Width>800</Width>
                 <Height>500</Height>
             </VideoProducer>
