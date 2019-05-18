@@ -46,9 +46,10 @@ if __name__ == "__main__":
         print(agent_host.getUsage())
         exit(0)
     
-    iRepeat = 10
-    for i in range(iRepeat):
+    iRepeat = 1
+    agent = Agent()
 
+    for i in range(iRepeat):
         my_mission = MalmoPython.MissionSpec(missionXML, True)
         my_mission_record = MalmoPython.MissionRecordSpec()
 
@@ -76,10 +77,21 @@ if __name__ == "__main__":
         print("Mission started")
 
         # Mission processing
+        a = 0
         while world_state.is_mission_running:
             time.sleep(0.1)
+
             world_state = agent_host.getWorldState()
             for error in world_state.errors:
                 print("Error:", error.text)
-            agent_host.sendCommand("jump 1")         
+
+            # get observation, state, action
+            observations = agent.getObservations(world_state)
+            state = agent.getState(observations)
+            print("State:", state)
+            print("Actions: ",agent.getActions(state))
+
+            print("shot!")
+            a += 1
         print("Mission ended")
+        agent.weapon = 1

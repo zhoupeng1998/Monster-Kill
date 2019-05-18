@@ -22,14 +22,16 @@
 #
 
 import json
+import time
 
 class Agent:
     # construct Agent object
-    def __init__ (self, alpha, gamma, epsilon, n):
+    def __init__ (self, alpha=0.3, gamma=1, epsilon=0.2, n=1):
         self.alpha = alpha
         self.gamma = gamma
         self.epsilon = epsilon
         self.n = n
+        self.weapon = 1
         self.q_table = dict()
     
     # get observations from world state, returns a world state dictionary
@@ -41,5 +43,80 @@ class Agent:
         else:
             return dict()
     
-    
+    # get the position between agent and the clostest mob.
+    # currently only considers zpos
+    def getMobDistance (self, zpos, entities):
+        distList = list()
+        for mob in entities:
+            if mob['name'] in set(['Zombie','Skeleton']):
+                distList.append(abs(mob['z'] - zpos))
+        return min(distList)
 
+    # get current state with observation
+    def getState (self, observations):
+        floatDistance = self.getMobDistance(observations['ZPos'], observations['entities'])
+        if floatDistance <= 3:
+            intDistance = 3
+        elif floatDistance <= 5:
+            intDistance = 5
+        elif floatDistance <= 10:
+            intDistance = 10
+        elif floatDistance <= 15:
+            intDistance = 15
+        else:
+            intDistance = 20
+        return (intDistance, self.weapon)
+    
+    # get all possible actions with current state
+    def getActions (self, state):
+        actionList = ['go_front', 'go_back']
+        if state[0] <= 3:
+            for wid in range(1,7):
+                if not wid == state[1]:
+                    actionList.append('swap_' + str(wid))
+            if state[1] != 1:
+                actionList.append('attack')
+        elif state[1] != 1:
+            actionList.append('swap_1')
+        if state[1] == 1:
+            actionList.append("shot_0.4")
+            actionList.append("shot_0.6")
+            actionList.append("shot_0.9")
+        return actionList
+
+    # let agent host do action
+    def act (self, action, agent_host):
+        if action == 'go_front':
+            agent_host.sendCommand('move 1')
+        elif action == 'go_back':
+            agent_host.sendCommand('move -1')
+        elif action == 'attack':
+            self.closeAttack(agent_host)
+        elif action.startswith('swap'):
+            self.swapWeapon(int(action[5:]), agent_host)
+        elif action.startswith('shot'):
+            self.rangeShoot(float(action[5:]), agent_host)
+        
+    # swap to other weapons in hotbar, with weapon slot id
+    def swapWeapon (self, id, agent_host):
+        assert id >= 1, "Weapon ID out of range"
+        assert id <= 6, "Weapon ID out of range"
+        agent_host.sendCommand("hotbar.%s 1" % id)
+        agent_host.sendCommand("hotbar.%s 0" % id)
+        self.weapon = id
+
+    # agent close attack. most possessing a sword
+    def closeAttack (self, agent_host):
+        assert self.weapon >= 1 and self.weapon <= 6, "Wrong close attack weapon"
+        agent_host.sendCommand("attack 1")
+        time.sleep(0.5)
+        agent_host.sendCommand("attack 0")
+    
+    # agent range shot with given time
+    def rangeShoot (self, floatTime, agent_host):
+        assert self.weapon == 1, "Wrong range attack weapon"
+        agent_host.sendCommand("use 1")
+        time.sleep(floatTime)
+        agent_host.sendCommand("use 0")
+        
+        
