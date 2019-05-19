@@ -23,6 +23,7 @@
 
 import json
 import time
+import random
 
 class Agent:
     # construct Agent object
@@ -33,6 +34,7 @@ class Agent:
         self.n = n
         self.weapon = 1
         self.q_table = dict()
+        self.pastActions = [];
     
     # get observations from world state, returns a world state dictionary
     @staticmethod
@@ -70,7 +72,11 @@ class Agent:
             intDistance = 15
         else:
             intDistance = 20
-        return (intDistance, self.weapon)
+        
+        state = list(intDistance, self.weapon)
+        for i in sorted(self.pastActions):
+            state.append(i)
+        return tuple(state)
     
     # get all possible actions with current state
     def getActions (self, state):
@@ -123,5 +129,26 @@ class Agent:
         agent_host.sendCommand("use 1")
         time.sleep(floatTime)
         agent_host.sendCommand("use 0")
+
+    # agent choose actions among possible_action list
+    def choose_actions(curr_state, possible_actions, eps, q_table):
+        rnd = random.random()
+        if rnd <= eps:
+            action = random.randiant(0, len(possible_actions)-1)
+        else:
+            sortedlist = [(k, q_table[curr_state][k]) for k in sorted(q_table[curr_state], key = q_table[curr_state].get, reverse = True)]
+            if (len(sortedlist)) >= 2 and sortedlist[0][1] == sortedlist[1][1]:
+                action = random.randient(0, len(possible_actions) - 1)
+            else:
+                a = sortedlist[0][0]
+                for i in range(len(possible_actions)):
+                    if a == possible_actions[i]:
+                        action = i
+                        break
+        return possible_actions[action]
+
+
+
+
         
         
