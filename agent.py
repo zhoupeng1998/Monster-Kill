@@ -48,14 +48,19 @@ class Agent:
     def getMobDistance (self, zpos, entities):
         distList = list()
         for mob in entities:
-            if mob['name'] in set(['Zombie','Skeleton']):
+            if mob['name'] in set(['Zombie','Skeleton','PigZombie','WitherSkeleton','WitherBoss']):
                 distList.append(abs(mob['z'] - zpos))
-        return min(distList)
+        if len(distList) > 0:
+            return min(distList)
+        else:
+            return -1
 
     # get current state with observation
     def getState (self, observations):
         floatDistance = self.getMobDistance(observations['ZPos'], observations['entities'])
-        if floatDistance <= 3:
+        if floatDistance < 0:
+            intDistance = -1
+        elif floatDistance <= 3:
             intDistance = 3
         elif floatDistance <= 5:
             intDistance = 5

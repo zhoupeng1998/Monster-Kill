@@ -27,6 +27,7 @@ import sys
 import time
 import json
 from agent import Agent
+import random
 
 if __name__ == "__main__":
 
@@ -46,7 +47,7 @@ if __name__ == "__main__":
         print(agent_host.getUsage())
         exit(0)
     
-    iRepeat = 1
+    iRepeat = 10
     agent = Agent()
 
     for i in range(iRepeat):
@@ -55,9 +56,11 @@ if __name__ == "__main__":
 
         # Start mission
         max_retries = 3
+        my_client_pool = MalmoPython.ClientPool()
+        my_client_pool.add(MalmoPython.ClientInfo("127.0.0.1", 10000))
         for retry in range(max_retries):
             try:
-                agent_host.startMission(my_mission, my_mission_record)
+                agent_host.startMission(my_mission, my_client_pool, my_mission_record, 0, "Monster Killer")
                 break
             except RuntimeError as e:
                 if retry == max_retries - 1:
@@ -76,8 +79,9 @@ if __name__ == "__main__":
                 print("Error:", error.text)
         print("Mission started")
 
-        # Mission processing
-        a = 0
+        # Mission processing, TODO: move actions to agent class
+        observations = agent.getObservations(world_state)
+        print(len(observations))
         while world_state.is_mission_running:
             time.sleep(0.1)
 
@@ -87,11 +91,19 @@ if __name__ == "__main__":
 
             # get observation, state, action
             observations = agent.getObservations(world_state)
+            if len(observations) <= 1:
+                continue
             state = agent.getState(observations)
+            actions = agent.getActions(state)
             print("State:", state)
-            print("Actions: ",agent.getActions(state))
+            print("Actions:", actions)
+            # randomize an action
+            actind = random.randint(0, len(actions) - 1)
+            agent.act(actions[actind], agent_host)
+            print("Action:", actions[actind])
 
-            print("shot!")
-            a += 1
+            if not observations['IsAlive'] or state[0] < 0:
+                break
         print("Mission ended")
         agent.weapon = 1
+        time.sleep(1) # sleep for 1s, otherwise it will not restart
