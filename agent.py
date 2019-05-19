@@ -146,6 +146,50 @@ class Agent:
                         action = i
                         break
         return possible_actions[action]
+    
+
+    def run(self,agent_host):
+        S, A, R = deque(), deque(), deque()
+        present_reward = 0
+        done_update = False
+        while not done_update:
+            observations = agent.getObservations(world_state)
+            s0 = self.getState(observations)
+            possible_actions = self.get_possible_actions(agent_host, True)
+            a0 = self.choose_action(s0, possible_actions, self.epsilon)
+            S.append(s0)
+            A.append(a0)
+            R.append(0)
+            T = sys.maxsize
+            for t in range(sys.maxsize):
+                time.sleep(0.1)
+                if t < T:
+                    current_r = self.act(agent_host, A[-1])
+                    R.append(current_r)
+
+                    if not observations['IsAlive'] or s0[0] < 0:
+                        # Terminating state
+                        T = t + 1
+                        S.append('Term State')
+                        present_reward = current_r
+                        print("Reward:", present_reward)
+                    else:
+                        s = self.get_curr_state()
+                        S.append(s)
+                        possible_actions = self.get_possible_actions(agent_host)
+                        next_a = self.choose_action(s, possible_actions, self.epsilon)
+                        A.append(next_a)
+
+                tau = t - self.n + 1
+                if tau >= 0:
+                    self.update_q_table(tau, S, A, R, T)
+
+                if tau == T - 1:
+                    while len(S) > 1:
+                        tau = tau + 1
+                            self.update_q_table(tau, S, A, R, T)
+                            done_update = True
+                            break
 
 
 
