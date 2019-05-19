@@ -21,7 +21,7 @@
 #                     佛祖保佑        永无BUG
 #
 
-from malmo import MalmoPython
+import MalmoPython
 import os
 import sys
 import time
@@ -51,6 +51,7 @@ if __name__ == "__main__":
     agent = Agent()
 
     for i in range(iRepeat):
+        agent.pastActions = []
         my_mission = MalmoPython.MissionSpec(missionXML, True)
         my_mission_record = MalmoPython.MissionRecordSpec()
 
@@ -81,29 +82,53 @@ if __name__ == "__main__":
 
         # Mission processing, TODO: move actions to agent class
         observations = agent.getObservations(world_state)
-        print(len(observations))
+        time.sleep(1)
         while world_state.is_mission_running:
             time.sleep(0.1)
 
-            world_state = agent_host.getWorldState()
-            for error in world_state.errors:
-                print("Error:", error.text)
+            
+            #for error in world_state.errors:
+            #   print("Error:", error.text)
 
             # get observation, state, action
-            observations = agent.getObservations(world_state)
-            if len(observations) <= 1:
-                continue
-            state = agent.getState(observations)
-            actions = agent.getActions(state)
-            print("State:", state)
-            print("Actions:", actions)
+            
+            #if len(observations) <= 1:
+            #   continue
+            agent.run(agent_host)
+            
+            
+            #actions = agent.getActions(state)
+            #print("State:", state)
+            #print("Actions:", actions)
             # randomize an action
-            actind = random.randint(0, len(actions) - 1)
-            agent.act(actions[actind], agent_host)
-            print("Action:", actions[actind])
+            
+            
+            #actind = random.randint(0, len(actions) - 1)
+            #agent.pastActions.append(actions[actind])
+            
+            
+            
 
+            #agent.act(actions[actind], agent_host)
+            
+            
+            
+            #getQ_tableKey(state)
+            #print("Action:", actions[actind])
+            world_state = agent_host.getWorldState()
+            observations = agent.getObservations(world_state)
+            while len(observations) <= 1:
+                observations = self.getObservations(world_state)
+            state = agent.getState(observations)
             if not observations['IsAlive'] or state[0] < 0:
                 break
         print("Mission ended")
+        print(agent.q_table)
+        agent.pastActions = []
         agent.weapon = 1
         time.sleep(1) # sleep for 1s, otherwise it will not restart
+
+
+
+
+

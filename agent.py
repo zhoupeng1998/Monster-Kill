@@ -23,7 +23,9 @@
 
 import json
 import time
+from collections import defaultdict, deque
 import random
+import sys
 
 class Agent:
     # construct Agent object
@@ -34,7 +36,8 @@ class Agent:
         self.n = n
         self.weapon = 1
         self.q_table = dict()
-        self.pastActions = [];
+
+        self.pastActions = []
     
     # get observations from world state, returns a world state dictionary
     @staticmethod
@@ -73,20 +76,21 @@ class Agent:
         else:
             intDistance = 20
         
-        state = list(intDistance, self.weapon)
-        for i in sorted(self.pastActions):
-            state.append(i)
-        return tuple(state)
+        #state = list((intDistance, self.weapon))
+            #for i in self.pastActions:
+            #state.append(i)
+#return tuple(state)
+        return (intDistance,self.weapon)
     
     # get all possible actions with current state
     def getActions (self, state):
-        actionList = ['go_front', 'go_back']
+        actionList = ['go_back']
+        if state[0] > 3:
+            actionList.append('go_front')
         if state[0] <= 3:
             for wid in range(1,7):
                 if not wid == state[1]:
                     actionList.append('swap_' + str(wid))
-            if state[1] != 1:
-                actionList.append('attack')
         elif state[1] != 1:
             actionList.append('swap_1')
         if state[1] == 1:
@@ -101,12 +105,15 @@ class Agent:
             agent_host.sendCommand('move 1')
         elif action == 'go_back':
             agent_host.sendCommand('move -1')
-        elif action == 'attack':
-            self.closeAttack(agent_host)
+            #elif action == 'attack':
+            #self.closeAttack(agent_host)
         elif action.startswith('swap'):
             self.swapWeapon(int(action[5:]), agent_host)
+            self.closeAttack(agent_host)
         elif action.startswith('shot'):
             self.rangeShoot(float(action[5:]), agent_host)
+
+        return 0
         
     # swap to other weapons in hotbar, with weapon slot id
     def swapWeapon (self, id, agent_host):
@@ -129,16 +136,44 @@ class Agent:
         agent_host.sendCommand("use 1")
         time.sleep(floatTime)
         agent_host.sendCommand("use 0")
+        
+    def update_q_table(self, tau, S, A, R, T):
+        """Performs relevant updates for state tau.
+            
+            Args
+            tau: <int>  state index to update
+            S:   <dequqe>   states queue
+            A:   <dequqe>   actions queue
+            R:   <dequqe>   rewards queue
+            T:   <int>      terminating state index
+            """
+        curr_s, curr_a, curr_r = S.popleft(), A.popleft(), R.popleft()
+        G = sum([self.gamma ** i * R[i] for i in range(len(S))])
+        if tau + self.n < T:
+            G += self.gamma ** self.n * self.q_table[S[-1]][A[-1]]
+        
+        old_q = self.q_table[curr_s][curr_a]
+        self.q_table[curr_s][curr_a] = old_q + self.alpha * (G - old_q)
 
-    # agent choose actions among possible_action list
-    def choose_actions(curr_state, possible_actions, eps, q_table):
+    
+        # agent choose actions among possible_action list
+    def choose_actions(self,curr_state, possible_actions, eps):
+        if curr_state not in self.q_table:
+            self.q_table[curr_state] = {}
+        for action in possible_actions:
+            if action not in self.q_table[curr_state]:
+                self.q_table[curr_state][action] = 0
+        
+        
+        
+        
         rnd = random.random()
         if rnd <= eps:
-            action = random.randiant(0, len(possible_actions)-1)
+            action = random.randint(0, len(possible_actions)-1)
         else:
-            sortedlist = [(k, q_table[curr_state][k]) for k in sorted(q_table[curr_state], key = q_table[curr_state].get, reverse = True)]
+            sortedlist = [(k, self.q_table[curr_state][k]) for k in sorted(self.q_table[curr_state], key = self.q_table[curr_state].get, reverse = True)]
             if (len(sortedlist)) >= 2 and sortedlist[0][1] == sortedlist[1][1]:
-                action = random.randient(0, len(possible_actions) - 1)
+                action = random.randint(0, len(possible_actions) - 1)
             else:
                 a = sortedlist[0][0]
                 for i in range(len(possible_actions)):
@@ -146,17 +181,22 @@ class Agent:
                         action = i
                         break
         return possible_actions[action]
-    
 
     def run(self,agent_host):
         S, A, R = deque(), deque(), deque()
         present_reward = 0
         done_update = False
         while not done_update:
-            observations = agent.getObservations(world_state)
+            world_state = agent_host.getWorldState()
+            observations = self.getObservations(world_state)
+            while len(observations) <= 1:
+                observations = self.getObservations(world_state)
+            
+            
             s0 = self.getState(observations)
-            possible_actions = self.get_possible_actions(agent_host, True)
-            a0 = self.choose_action(s0, possible_actions, self.epsilon)
+            possible_actions = self.getActions(s0)
+            a0 = self.choose_actions(s0, possible_actions, self.epsilon)
+            self.pastActions.append(a0)
             S.append(s0)
             A.append(a0)
             R.append(0)
@@ -164,35 +204,37 @@ class Agent:
             for t in range(sys.maxsize):
                 time.sleep(0.1)
                 if t < T:
-                    current_r = self.act(agent_host, A[-1])
+                    current_r = self.act(A[-1],agent_host)
                     R.append(current_r)
-
-                    if not observations['IsAlive'] or s0[0] < 0:
+                    
+                    if not observations['IsAlive'] or S[-1][0] < 0:
                         # Terminating state
+                        print(1)
                         T = t + 1
                         S.append('Term State')
                         present_reward = current_r
                         print("Reward:", present_reward)
                     else:
-                        s = self.get_curr_state()
+                        world_state = agent_host.getWorldState()
+                        observations = self.getObservations(world_state)
+                        while len(observations) <= 1:
+                            observations = self.getObservations(world_state)
+                        s = self.getState(observations)
                         S.append(s)
-                        possible_actions = self.get_possible_actions(agent_host)
-                        next_a = self.choose_action(s, possible_actions, self.epsilon)
+                        possible_actions = self.getActions(s0)
+                        next_a = self.choose_actions(s, possible_actions, self.epsilon)
+                        self.pastActions.append(next_a)
                         A.append(next_a)
-
+            
                 tau = t - self.n + 1
+    
                 if tau >= 0:
+                    
                     self.update_q_table(tau, S, A, R, T)
 
                 if tau == T - 1:
                     while len(S) > 1:
                         tau = tau + 1
-                            self.update_q_table(tau, S, A, R, T)
-                            done_update = True
-                            break
-
-
-
-
-        
-        
+                        self.update_q_table(tau, S, A, R, T)
+                    done_update = True
+                    break
