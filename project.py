@@ -47,7 +47,7 @@ if __name__ == "__main__":
         print(agent_host.getUsage())
         exit(0)
     
-    iRepeat = 10
+    iRepeat = 1000
     agent = Agent()
 
     for i in range(iRepeat):
@@ -83,49 +83,43 @@ if __name__ == "__main__":
         # Mission processing, TODO: move actions to agent class
         observations = agent.getObservations(world_state)
         time.sleep(1)
-        while world_state.is_mission_running:
-            time.sleep(0.1)
 
-            
-            #for error in world_state.errors:
-            #   print("Error:", error.text)
 
-            # get observation, state, action
-            
-            #if len(observations) <= 1:
-            #   continue
-            agent.run(agent_host)
-            
-            
-            #actions = agent.getActions(state)
-            #print("State:", state)
-            #print("Actions:", actions)
-            # randomize an action
-            
-            
-            #actind = random.randint(0, len(actions) - 1)
-            #agent.pastActions.append(actions[actind])
-            
-            
-            
+        agent.run(agent_host)
+        
+        
+        #actions = agent.getActions(state)
+        #print("State:", state)
+        #print("Actions:", actions)
+        # randomize an action
+        
+        
+        #actind = random.randint(0, len(actions) - 1)
+        #agent.pastActions.append(actions[actind])
+        
+        
+        
 
-            #agent.act(actions[actind], agent_host)
-            
-            
-            
-            #getQ_tableKey(state)
-            #print("Action:", actions[actind])
-            world_state = agent_host.getWorldState()
-            observations = agent.getObservations(world_state)
-            while len(observations) <= 1:
-                observations = self.getObservations(world_state)
-            state = agent.getState(observations)
-            if not observations['IsAlive'] or state[0] < 0:
-                break
+        #agent.act(actions[actind], agent_host)
+        
+        
+        
+        #getQ_tableKey(state)
+        #print("Action:", actions[actind])
+        #world_state = agent_host.getWorldState()
+        #observations = agent.getObservations(world_state)
+        #while len(observations) <= 1:
+        #    observations = agent.getObservations(world_state)
+        #print(world_state.is_mission_running)
+        #state = agent.getState(observations)
+        #if not observations['IsAlive'] or state[0] == -100000:
+            #break
         print("Mission ended")
         print(agent.q_table)
         agent.pastActions = []
         agent.weapon = 1
+        tp_command = "tp 0 0 0"
+        agent_host.sendCommand(tp_command)
         time.sleep(1) # sleep for 1s, otherwise it will not restart
 
 
