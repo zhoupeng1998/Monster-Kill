@@ -21,7 +21,11 @@
 #                     佛祖保佑        永无BUG
 #
 
-import MalmoPython
+try:
+    from malmo import MalmoPython
+except:
+    import MalmoPython
+    
 import os
 import sys
 import time
