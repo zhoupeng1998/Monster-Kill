@@ -21,17 +21,17 @@
 #                     佛祖保佑        永无BUG
 #
 
-try:
-    from malmo import MalmoPython
-except:
-    import MalmoPython
-    
+import MalmoPython
 import os
 import sys
 import time
 import json
 from agent import Agent
 import random
+
+
+
+
 
 if __name__ == "__main__":
 
@@ -82,7 +82,9 @@ if __name__ == "__main__":
             world_state = agent_host.getWorldState()
             for error in world_state.errors:
                 print("Error:", error.text)
-        print("Mission started")
+        print()
+        print("Mission started: ",i, " with n = 10"," and with eps = ",agent.epsilon)
+
 
         # Mission processing, TODO: move actions to agent class
         observations = agent.getObservations(world_state)
@@ -91,41 +93,28 @@ if __name__ == "__main__":
 
         agent.run(agent_host)
         
-        
-        #actions = agent.getActions(state)
-        #print("State:", state)
-        #print("Actions:", actions)
-        # randomize an action
-        
-        
-        #actind = random.randint(0, len(actions) - 1)
-        #agent.pastActions.append(actions[actind])
-        
-        
-        
 
-        #agent.act(actions[actind], agent_host)
-        
-        
-        
-        #getQ_tableKey(state)
-        #print("Action:", actions[actind])
-        #world_state = agent_host.getWorldState()
-        #observations = agent.getObservations(world_state)
-        #while len(observations) <= 1:
-        #    observations = agent.getObservations(world_state)
-        #print(world_state.is_mission_running)
-        #state = agent.getState(observations)
-        #if not observations['IsAlive'] or state[0] == -100000:
-            #break
         print("Mission ended")
-        print(agent.q_table)
+        if (-100000,1) in agent.q_table:
+            del agent.q_table[(-100000,1)]
+        for state in agent.q_table:
+            lowest = -10000
+            theaction = 0
+            for action in agent.q_table[state]:
+                if agent.q_table[state][action] > lowest:
+                    lowest = agent.q_table[state][action]
+                    theaction = action
+            print("On state: ",state," best action is ",theaction," with q_value of ", lowest)
         agent.pastActions = []
+        agent.MonsterHeart = 20
+        agent.Heart = 20
+        agent.action = 0
         agent.weapon = 1
-        tp_command = "tp 0 0 0"
+        tp_command = "tp 0 255 0"
         agent_host.sendCommand(tp_command)
         time.sleep(1) # sleep for 1s, otherwise it will not restart
 
+        agent.epsilon-=0.01
 
 
 
