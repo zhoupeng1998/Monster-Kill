@@ -22,6 +22,7 @@ title:  Status
 #### Rewards Setting
 - For the reward setting, we take into account of weapon rarity, weapon durability, HP damage to the enemy, agent HP cost and time cost after each action the agent made. Details of calculation are explained in the following paragraphs.
 - To get the weapon rarity data, we simulated a world of chunks with World Editor of Minecraft (MCEdit) and calculated the generation rates of different materials such as stone, iron, gold and diamond. In the 256 block tall and 16 x 16 chunks with 65,536 blocks, the rating of generation rates is Stone > Iron > Gold > Diamond, where the possibility of finding enough stones for crafting a sword is 25 times higher than that of finding an iron, 278 times higher than that of finding a gold and 928 times that of finding a Diamond. Let’s set the cost of one time attack regardless of damages C = -ln(x), where x is the possibility of finding enough materials to craft a sword based on the possibility of finding enough stones in order to reduce the huge difference. 
+
     |Weapons|Generation Rate|Effort needed to craft (Unit: effort to craft stone sword)|Cost = -ln(Effort)|
     |-------|-------|-------|------|
     |Wooden Sword|N/A|1|-1|
@@ -30,8 +31,10 @@ title:  Status
     |Iron Sword|0.0015564|25|-3.22|
     |Gold Sword|0.00014801|278|-5.36|
     |Diamond Sword|0.0000528|928|-6.83|
+    
     ![Image Text](https://raw.githubusercontent.com/zhoupeng1998/Monster-Kill-Resource/master/img/figure1.png)
 - Analysis of the weapon durability data indicates that the rating of durability is Gold < Wood < Stone < Iron < Diamond. Let’s set the durability of gold sword as the basic case. The durability of wooden sword is 2 times longer than that of gold sword;  The durability of Arrow is 10 times longer than that of gold sword; The durability of iron is 7.6 times longer than that of gold sword; The durability of stone is 4 times longer than that of gold sword; The durability of Diamond is 47 times longer than that of gold sword. After considering the HPs of normal mobs (zombies would be killed by 5 times of close attacks) and the damages of different weapons, we set the maximum times of a weapon usage Umax = log(3y) * 20, where y is the durability of different weapons based on that of the gold sword to reduce the huge difference. 
+
     |Weapons|Durability|Attack Damage|Maximum times of usage = log(3*Durability) * 20|
     |-|-|-|-|
     |Wooden Sword|60|4|16|
@@ -40,6 +43,7 @@ title:  Status
     |Iron Sword|251|6|27|
     |Gold Sword|33|4|10|
     |Diamond Sword|1562|7|43|
+    
     ![Image Text](https://raw.githubusercontent.com/zhoupeng1998/Monster-Kill-Resource/master/img/figure2.png)
 - Rewards of causing damages to the enemy and receiving damages from the enemy are directly calculated by changes of health points (of Enemy or Agent) times some constant in order to increase the difference of different actions. By analyzing the attack damage data in Figure 4, we find that the advantages of greater weapons are not that strong so we modified the data to better display the differences. For instance, if the agent makes a close attack using a diamond sword and cause 7 points reduce to the enemy’s health points, then the rewards would be  3 x 7 = +21 to reward the action. However, if the agent receives damages from the enemy with 3 health points loss, then the rewards would -3 x 4 = -12 as punishment of getting hurt.
 - Rewards of time cost are calculated by a linear function given that more time cost would lead to more costs. Therefore, we define T = - (0.5 + 0.1z), where z is the number of actions it has already made in order to punish more actions.
