@@ -22,7 +22,9 @@ Reports:
 
 Videos:
 
-- Status Report - Comming Soon
+- Status Report - Video below
+
+[![Video](https://i9.ytimg.com/vi/CpJ8CY-qIeU/mq2.jpg?sqp=CMCRpOcF&rs=AOn4CLADLw5eVkYs1x7LANwizMZJJ72w1Q)](https://youtu.be/CpJ8CY-qIeU)
 - [Learning to attack a Zombie, with n=1](https://youtu.be/WYGCHZLbv-M)
 - [Learning to attack a Zombie, with n=10](https://youtu.be/q7DSRw9kz3Y)
 - [Learning to attack a Vindication Villager](https://youtu.be/rSCD-aySpaU)
