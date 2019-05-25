@@ -156,7 +156,7 @@ class Agent:
             else:
                 self.swapWeapon(1, agent_host)
 
-                self.rangeShoot(0.6, agent_host)
+                self.rangeShoot(0.75, agent_host)
 #elif action.startswith('shot'):
 # self.rangeShoot(float(action[5:]), agent_host)
 
@@ -231,7 +231,7 @@ class Agent:
         
     def faceEnemy(self,observations,agent_host):
         for mob in observations['entities']:
-            if mob['name'] == 'Zombie':
+            if mob['name'] in enemies:
                 zomx = float(mob['x'])
                 zomy = float(mob['y'])
                 zomz = float(mob['z'])
@@ -298,7 +298,9 @@ class Agent:
         return -reward
     
     def rewardCalculate(self,agent_host,observations,action):
-        total = -0.5
+        total = 0
+        if action == 'go_back' or action == 'go front':
+            total += 0.2
         
         
         

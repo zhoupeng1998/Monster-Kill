@@ -83,21 +83,22 @@ if __name__ == "__main__":
             for error in world_state.errors:
                 print("Error:", error.text)
         print()
-        print("Mission started: ",i, " with n = 10"," and with eps = ",agent.epsilon)
+        print("Mission started: ",i, " with n = 1"," and with eps = ",agent.epsilon)
 
 
         # Mission processing, TODO: move actions to agent class
         observations = agent.getObservations(world_state)
         time.sleep(1)
 
-
+        agent_host.sendCommand("chat " +  "/summon minecraft:creeper ~ ~0 ~10 {Passengers:[{id:'minecraft:skeleton',HandItems:[{id:'minecraft:bow',Count:1},{id:'minecraft:arrow',Count:1}]}]}")
+        time.sleep(1)
         agent.run(agent_host)
         
 
         print("Mission ended")
         if (-100000,1) in agent.q_table:
             del agent.q_table[(-100000,1)]
-        for state in agent.q_table:
+        for state in sorted(agent.q_table.keys()):
             lowest = -10000
             theaction = 0
             for action in agent.q_table[state]:
@@ -105,16 +106,21 @@ if __name__ == "__main__":
                     lowest = agent.q_table[state][action]
                     theaction = action
             print("On state: ",state," best action is ",theaction," with q_value of ", lowest)
+
+        tp_command = "tp 0 255 0"
+        agent_host.sendCommand(tp_command)
+        time.sleep(1) # sleep for 1s, otherwise it will not restart
+            #if agent.Heart == 0:
+            #if i+1 % 10 == 0:
+            #   agent.epsilon-=0.01
+            #else:
+        agent.epsilon-=0.01
+
         agent.pastActions = []
         agent.MonsterHeart = 20
         agent.Heart = 20
         agent.action = 0
         agent.weapon = 1
-        tp_command = "tp 0 255 0"
-        agent_host.sendCommand(tp_command)
-        time.sleep(1) # sleep for 1s, otherwise it will not restart
-
-        agent.epsilon-=0.01
 
 
 
