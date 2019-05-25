@@ -3,6 +3,8 @@ layout: default
 title:  Status
 ---
 
+### Video
+[![Video](https://i9.ytimg.com/vi/CpJ8CY-qIeU/mq2.jpg?sqp=CMCRpOcF&rs=AOn4CLADLw5eVkYs1x7LANwizMZJJ72w1Q)](https://youtu.be/CpJ8CY-qIeU)
 ### Project Summary
 - Would it be nice to kill monsters with least resources and time? In this project, the agent will learn how to kill mobs (hostile mobs especially) in Minecraft using the most efficient weapon combinations with least costs (health point costs, weapon durability, weapon craft costs,  time costs and etc. would be considered) and dodge attacks in a closed territory (20 x 20) under a “survival” mode setting. We would provide one kind of hostile mobs and multiple weapons as input while the output is expected to be the best combination of weapons and actions to kill the mob with lowest cost. The application of this projects offers players the most efficient approach to kill a specific mob. For beginners of Minecraft, application of this project includes how to survive in a dark night with a large number of different kinds of monsters. For advanced players, it could also be helpful by offering the best combination of weapons and actions to beat more powerful enemies, such as the Wither and the End Dragon. 
 
