@@ -6,11 +6,11 @@ title:  Team
 # {{ page.title }}
 
 
-## USER 1
+## Peng Zhou
 ***UCI Net ID***: pzhou2
 
-## USER 2
+## Wenyu Ouyang
 ***UCI Net ID***: wenyuo
 
-## USER 3
+## Jiashuo Liu
 ***UCI Net ID***: jiashul2
