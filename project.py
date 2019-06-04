@@ -20,6 +20,7 @@
 #          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 #                     佛祖保佑        永无BUG
 #
+
 try:
     import MalmoPython
 except:
@@ -95,8 +96,8 @@ if __name__ == "__main__":
         
         # Mission ended, analyze Q-table
         print("Mission ended")
-        if (0,1) in agent.q_table:
-            del agent.q_table[(0,1)]
+        if (-1,1) in agent.q_table:
+            del agent.q_table[(-1,1)]
         for state in sorted(agent.q_table.keys()):
             lowest = -10000
             theaction = 0
@@ -114,7 +115,7 @@ if __name__ == "__main__":
             #if i+1 % 10 == 0:
             #   agent.epsilon-=0.01
             #else:
-            
+
         # reset agent parameters
         agent.epsilon-=0.01
         agent.pastActions = []

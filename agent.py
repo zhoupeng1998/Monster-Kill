@@ -65,19 +65,19 @@ class Agent:
         distList = list()
         for mob in entities:
             if mob['name'] in enemies:
-                distList.append(mob['z'] - zpos)
+                distList.append(abs(mob['z'] - zpos))
         if len(distList) > 0:
             return min(distList)
         else:
-            return -100000
+            return -1
 
     # get current state with observation
     # current assumes enemies are all aimed!
     def getState (self, observations):
         floatDistance = self.getMobDistance(observations['ZPos'], observations['entities'])
-        if floatDistance == -100000:
+        if floatDistance < 0:
             #return (floatDistance,1)
-            return (0,1)
+            return (-1,1)
         if floatDistance > 15:
             floatDistance = 20
         elif floatDistance > 10:
@@ -87,18 +87,9 @@ class Agent:
         return (int(abs(floatDistance)),1)
     
     # get all possible actions with current state
+    # currently returns 7 actions for all states
     def getActions (self, state):
-        actionList = ['go_back','go_front']
-        for wid in range(1,7):
-            actionList.append('swap_' + str(wid))
-        return actionList
-
-        if state[1] == 1:
-            actionList.append("shot_0.4")
-            actionList.append("shot_0.6")
-            actionList.append("shot_0.9")
-        
-        return actionList
+        return utils.action_list
 
     # let agent host do action
     def act (self, action, agent_host):
@@ -111,23 +102,19 @@ class Agent:
             agent_host.sendCommand('move -1')
             time.sleep(0.25)
             agent_host.sendCommand('move 0')
-            #elif action == 'attack':
-            #self.closeAttack(agent_host)
-        elif action.startswith('swap'):
-            weapon_count_map[action]+=1
-            if int(action[5:]) != 1:
-                self.swapWeapon(int(action[5:]), agent_host)
-
-                self.closeAttack(agent_host)
-            else:
-                self.swapWeapon(1, agent_host)
-
-                self.rangeShoot(0.75, agent_host)
+        elif action.startswith('attack'):
+            utils.weapon_count_map[action] += 1
+            self.swapWeapon(int(action[7:]), agent_host)
+            self.closeAttack(agent_host)
+        else:
+            utils.weapon_count_map['shoot'] += 1
+            self.swapWeapon(1, agent_host)
+            self.rangeShoot(float(action[6:]), agent_host)
         
     # swap to other weapons in hotbar, with weapon slot id
     def swapWeapon (self, id, agent_host):
         assert id >= 1, "Weapon ID out of range"
-        assert id <= 6, "Weapon ID out of range"
+        assert id <= 3, "Weapon ID out of range"
         agent_host.sendCommand("hotbar.%s 1" % id)
         agent_host.sendCommand("hotbar.%s 0" % id)
         self.weapon = id
@@ -209,7 +196,9 @@ class Agent:
     def damageDone(self,agent_host,observations,action):
         if action == 'go_back' or action == 'go_front':
             return 0
-        damage = rewards_map[action][0]
+        if action.startswith('shoot'): # special care for shoot actions
+            action = 'shoot'
+        damage = utils.rewards_map[action][0]
         life =1000000
         for mob in observations['entities']:
             if mob['name'] == 'Zombie':
@@ -233,9 +222,11 @@ class Agent:
     
     # calculate weapon usage penalty
     def maxAttack(self,agent_host,observations,action):
-        if rewards_map[action][1] == 0:
+        if action.startswith('shoot'): # special care for shoot actions
+            action = 'shoot'
+        if utils.rewards_map[action][1] == 0:
             return 0
-        if weapon_count_map[action] > rewards_map[action][1]:
+        if utils.weapon_count_map[action] > utils.rewards_map[action][1]:
             return -20
         return 0
     
@@ -249,6 +240,8 @@ class Agent:
         total = 0
         if action == 'go_back' or action == 'go front':
             total += 0.2
+        elif action.startswith('shoot'): # special care for shoot actions
+            action = 'shoot'
         total += self.damageDone(agent_host,observations,action)
         total += self.receiveDamage(agent_host,observations)
         total += self.maxAttack(agent_host,observations,action)
@@ -320,7 +313,7 @@ class Agent:
                     #get observation
                     current_r = self.rewardCalculate(agent_host,observations,A[-1])
                     R.append(current_r)
-                    if not observations['IsAlive'] or S[-1][0] <= 0:
+                    if not observations['IsAlive'] or S[-1][0] < 0:
                         # Terminating state
                         T = t + 1
                         S.append('Term State')
