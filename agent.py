@@ -294,6 +294,9 @@ class Agent:
             T = sys.maxsize
             for t in range(sys.maxsize):
                 if t < T:
+                    # print state and action
+                    print(S[-1], ",", A[-1], end=' , ')
+                    # change direction and act
                     self.changeDirection(agent_host,observations)
                     self.act(A[-1],agent_host)
                     if A[-1][0] == 's':
@@ -318,8 +321,9 @@ class Agent:
                     if deadflag == 1:
                         done_update = True
                         break
-                    #get observation
+                    #get reward
                     current_r = self.rewardCalculate(agent_host,observations,A[-1])
+                    print(current_r)
                     R.append(current_r)
                     if not observations['IsAlive'] or S[-1][0] < 0:
                         # Terminating state

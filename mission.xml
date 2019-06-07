@@ -34,7 +34,7 @@
     <AgentSection mode="Survival">
         <Name>Monster Killer</Name>
         <AgentStart>
-            <Placement pitch="0" x="20" y="231" yaw="0" z="25"/>
+            <Placement pitch="0" x="25.5" y="231" yaw="0" z="25"/>
             <!--<Placement pitch="0" x="25.5" y="231" yaw="0" z="34.5"/>-->
             <Inventory>
                 <InventoryItem slot="0" type="bow"/>
