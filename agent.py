@@ -149,9 +149,7 @@ class Agent:
             R:   <dequqe>   rewards queue
             T:   <int>      terminating state index
             """
-        print((S))
-        print((A))
-        print((R))
+
         
         curr_s, curr_a, curr_r = S[i], A[i], R[i+1]
         
