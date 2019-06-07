@@ -141,22 +141,26 @@ class Agent:
         agent_host.sendCommand("use 0")
     
     # update Q-table, performs relevant updates for state tau.
-    def updateQTable(self, tau, S, A, R, T):
+    def updateQTable(self, tau, S, A, R, T,i):
         """
-        tau: <int>  state index to update
-        S:   <dequqe>   states queue
-        A:   <dequqe>   actions queue
-        R:   <dequqe>   rewards queue
-        T:   <int>      terminating state index
-        """
-        curr_s, curr_a, curr_r = S.popleft(), A.popleft(), R.popleft()
+            tau: <int>  state index to update
+            S:   <dequqe>   states queue
+            A:   <dequqe>   actions queue
+            R:   <dequqe>   rewards queue
+            T:   <int>      terminating state index
+            """
+        print((S))
+        print((A))
+        print((R))
         
-        G = sum([self.gamma ** i * R[i] for i in range(len(S))])
-        if tau + self.n < T:
-            G += self.gamma ** self.n * self.q_table[S[-1]][A[-1]]
-
+        curr_s, curr_a, curr_r = S[i], A[i], R[i+1]
+        
+        #G = sum([self.gamma ** i * R[i] for i in range(len(S))])
+        #if tau + self.n < T:
+        #    G += self.gamma ** self.n * self.q_table[S[-1]][A[-1]]
+        
         old_q = self.q_table[curr_s][curr_a]
-        self.q_table[curr_s][curr_a] = old_q + self.alpha * (G - old_q)
+        self.q_table[curr_s][curr_a] = old_q + self.alpha * (curr_r - old_q)
 
     # agent choose actions among possible_action list
     def chooseActions(self,curr_state, possible_actions, eps):
@@ -275,7 +279,7 @@ class Agent:
         for action in weapon_count_map:
             weapon_count_map[action] = 0
         deadflag = 0
-        S, A, R = deque(), deque(), deque()
+        S, A, R = [],[],[]
         present_reward = 0
         done_update = False
         while not done_update:
@@ -338,11 +342,9 @@ class Agent:
                         self.pastActions.append(next_a)
                         A.append(next_a)
                 tau = t - self.n + 1
-                if tau >= 0:
-                    self.updateQTable(tau, S, A, R, T)
                 if tau == T - 1:
-                    while len(S) > 1:
+                    for i in range(len(S)-1):
                         tau = tau + 1
-                        self.updateQTable(tau, S, A, R, T)
+                        self.updateQTable(tau, S, A, R, T,i)
                     done_update = True
                     break
