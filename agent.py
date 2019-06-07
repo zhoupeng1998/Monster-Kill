@@ -33,8 +33,7 @@ rewards_map = {'swap_1':[-2,30],'swap_2':[-1,16],'swap_3':[-1,22],'swap_4':[-3.2
 
 weapon_count_map = {'swap_1':0,'swap_2':0,'swap_3':0,'swap_4':0,'swap_5':0,'swap_6':0,'go_back':0,'go_front':0}
 
-enemies = set(['WitherSkeleton','Stray','Husk','Giant','Spider','Zombie','Skeleton'
-               ,'PigZombie','WitherBoss','VillagerGolem','Guardian','Witch','EnderDragon','Blaze','Ghast','Creeper','VindicationIllager','ZombieVillager','ElderGuardian'])
+enemies = set(['WitherSkeleton','Stray','Husk','Giant','Spider','Zombie','Skeleton','PigZombie','WitherBoss','VillagerGolem','Guardian','Witch','EnderDragon','Blaze','Ghast','Creeper','VindicationIllager','ZombieVillager','ElderGuardian'])
 
 class Agent:
     # construct Agent object

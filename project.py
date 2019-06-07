@@ -87,11 +87,13 @@ if __name__ == "__main__":
         print("Mission started: ",i, " with n = 1"," and with eps = ",agent.epsilon)
 
         # Mission running
+        agent_host.sendCommand("chat " +  "/effect @p minecraft:hunger 5 201")
+        time.sleep(2)
         observations = agent.getObservations(world_state)
-        time.sleep(1)
+        
 
-        agent_host.sendCommand("chat " +  "/summon minecraft:creeper ~ ~0 ~10 {Passengers:[{id:'minecraft:skeleton',HandItems:[{id:'minecraft:bow',Count:1},{id:'minecraft:arrow',Count:1}]}]}")
-        time.sleep(1)
+        agent_host.sendCommand("chat " +  "/summon minecraft:creeper ~ ~0 ~10")
+        time.sleep(0.5)
         agent.run(agent_host)
         
         # Mission ended, analyze Q-table
