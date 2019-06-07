@@ -22,9 +22,10 @@
                 <DrawCuboid type="glowstone" x1="15" y1="230" z1="20" x2="36" y2="240" z2="41"/>
                 <DrawCuboid type="glowstone" x1="15" y1="241" z1="20" x2="36" y2="241" z2="41"/>
                 <DrawCuboid type="air" x1="16" y1="231" z1="21" x2="35" y2="240" z2="40"/>
-                <DrawCuboid type="stone" x1="24" y1="231" z1="21" x2="24" y2="232" z2="40"/>
-                <DrawCuboid type="stone" x1="26" y1="231" z1="21" x2="26" y2="232" z2="40"/>
-                
+
+                <!--<DrawItem x="25" y="235" z="38" type="bow"/>
+                <DrawItem x="25" y="235" z="38" type="arrow"/>-->
+
             </DrawingDecorator>
             <ServerQuitWhenAnyAgentFinishes/>
         </ServerHandlers>
@@ -33,7 +34,7 @@
     <AgentSection mode="Survival">
         <Name>Monster Killer</Name>
         <AgentStart>
-            <Placement pitch="0" x="25.5" y="231" yaw="0" z="29"/>
+            <Placement pitch="0" x="20" y="231" yaw="0" z="25"/>
             <!--<Placement pitch="0" x="25.5" y="231" yaw="0" z="34.5"/>-->
             <Inventory>
                 <InventoryItem slot="0" type="bow"/>

@@ -87,19 +87,23 @@ if __name__ == "__main__":
         print("Mission started: ",i, " with n = 1"," and with eps = ",agent.epsilon)
 
         # Mission running
+        # let agent hunger s.t. no life recovery
         agent_host.sendCommand("chat " +  "/effect @p minecraft:hunger 5 201")
         time.sleep(2)
         observations = agent.getObservations(world_state)
-        
-
+        # generate enemy after hunger
         agent_host.sendCommand("chat " +  "/summon minecraft:creeper ~ ~0 ~10")
         time.sleep(0.5)
+
         agent.run(agent_host)
         
         # Mission ended, analyze Q-table
         print("Mission ended")
-        if (-1,1) in agent.q_table:
-            del agent.q_table[(-1,1)]
+        # delete state where enemy died
+        for t in agent.q_table:
+            if t[0] < 0:
+                del agent.q_table[t]
+                break
         for state in sorted(agent.q_table.keys()):
             lowest = -10000
             theaction = 0
