@@ -90,14 +90,17 @@ if __name__ == "__main__":
         observations = agent.getObservations(world_state)
         time.sleep(1)
 
-        agent_host.sendCommand("chat " +  "/summon minecraft:creeper ~ ~0 ~10 {Passengers:[{id:'minecraft:skeleton',HandItems:[{id:'minecraft:bow',Count:1},{id:'minecraft:arrow',Count:1}]}]}")
+        #agent_host.sendCommand("chat " +  "/summon minecraft:creeper ~ ~0 ~10 {Passengers:[{id:'minecraft:skeleton',HandItems:[{id:'minecraft:bow',Count:1},{id:'minecraft:arrow',Count:1}]}]}")
         time.sleep(1)
         agent.run(agent_host)
         
         # Mission ended, analyze Q-table
         print("Mission ended")
-        if (-1,1) in agent.q_table:
-            del agent.q_table[(-1,1)]
+        # delete state where enemy died
+        for t in agent.q_table:
+            if t[0] < 0:
+                del agent.q_table[t]
+                break
         for state in sorted(agent.q_table.keys()):
             lowest = -10000
             theaction = 0

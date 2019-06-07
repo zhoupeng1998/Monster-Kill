@@ -75,16 +75,24 @@ class Agent:
     # current assumes enemies are all aimed!
     def getState (self, observations):
         floatDistance = self.getMobDistance(observations['ZPos'], observations['entities'])
+        floatLife = observations["Life"]
+        if floatLife <= 5:
+            life = "low"
+        elif floatLife <= 10:
+            life = "mid"
+        elif floatLife <= 15:
+            life = "high"
+        else:
+            life = "full"
         if floatDistance < 0:
-            #return (floatDistance,1)
-            return (-1,1)
+            floatDistance = -1
         if floatDistance > 15:
             floatDistance = 20
         elif floatDistance > 10:
             floatDistance = 15
         elif floatDistance > 5:
             floatDistance = 10
-        return (int(abs(floatDistance)),1)
+        return (int(floatDistance), life, 1)
     
     # get all possible actions with current state
     # currently returns 7 actions for all states
@@ -173,7 +181,7 @@ class Agent:
                         break
         return possible_actions[action]
     
-    # turn facing to enemy (deprecated?)
+    # turn facing to enemy, DEPRECATED, new: changeDirection
     def faceEnemy(self,observations,agent_host):
         for mob in observations['entities']:
             if mob['name'] in enemies:
@@ -201,7 +209,7 @@ class Agent:
         damage = utils.rewards_map[action][0]
         life =1000000
         for mob in observations['entities']:
-            if mob['name'] == 'Zombie':
+            if mob['name'] in utils.enemies:
                 life = mob['life']
         if life < self.MonsterHeart:
             damage += (self.MonsterHeart - life)
@@ -255,7 +263,7 @@ class Agent:
         ax = 0
         az = 0
         for mob in observations['entities']:
-            if mob['name'] != 'Monster Killer':
+            if mob['name'] in utils.enemies:
                 zx = mob['x']
                 zz = mob['z']
             elif mob['name'] == 'Monster Killer':
@@ -273,6 +281,7 @@ class Agent:
         done_update = False
         while not done_update:
             world_state = agent_host.getWorldState()
+            # get observation until it's not empty
             observations = self.getObservations(world_state)
             while len(observations) <= 1:
                 observations = self.getObservations(world_state)

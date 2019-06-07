@@ -65,7 +65,6 @@ def turnFacingByAgentTargetPosition (agtX, agtZ, tarX, tarZ, agent_host):
         return
     else:
         ang = math.degrees(math.atan2(abs(diffX), abs(diffZ)))
-        print(ang)
     if diffZ < 0:
         if diffX > 0:
             agent_host.sendCommand("setYaw %f" % (ang-180))
