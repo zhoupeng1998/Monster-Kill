@@ -257,6 +257,17 @@ class Agent:
         #total += self.timedeclay()
         return total
     
+    # reset agent parameters and weapon usage
+    def resetAgent(self):
+        self.epsilon-=0.01
+        self.pastActions = []
+        self.MonsterHeart = 20
+        self.Heart = 20
+        self.action = 0
+        self.weapon = 1
+        for k in utils.weapon_count_map:
+            utils.weapon_count_map[k] = 0
+
     # change direction to face closest enemy
     def changeDirection(self,agent_host,observations):
         zx = 0

@@ -93,7 +93,7 @@ if __name__ == "__main__":
         time.sleep(2)
         observations = agent.getObservations(world_state)
         # generate enemy after hunger
-        agent_host.sendCommand("chat " +  "/summon minecraft:creeper ~ ~0 ~15")
+        agent_host.sendCommand("chat " +  "/summon minecraft:witch ~ ~0 ~15")
         time.sleep(0.5)
 
         agent.run(agent_host)
@@ -123,13 +123,4 @@ if __name__ == "__main__":
             #   agent.epsilon-=0.01
             #else:
 
-        # reset agent parameters
-        agent.epsilon-=0.01
-        agent.pastActions = []
-        agent.MonsterHeart = 20
-        agent.Heart = 20
-        agent.action = 0
-        agent.weapon = 1
-        # reset weapon usage
-        for k in utils.weapon_count_map:
-            utils.weapon_count_map[k] = 0
+        agent.resetAgent()
