@@ -75,3 +75,41 @@ def turnFacingByAgentTargetPosition (agtX, agtZ, tarX, tarZ, agent_host):
             agent_host.sendCommand("setYaw %f" % (0-ang))
         else:
             agent_host.sendCommand("setYaw %f" % (ang-0))
+
+def setPitchByAgentTargetPosition (agtX, agtY, agtZ, tarX, tarY, tarZ, agent_host):
+    if tarY - agtY <= 0:
+        return
+    diffX = tarX - agtX
+    diffZ = tarZ - agtZ
+    xzDist = math.sqrt(diffX**2 + diffZ**2)
+    ang = math.degrees(math.acos(xzDist / (tarY-agtY)))
+    agent_host.sendCommand("setPitch %f" % (-1*ang))
+
+def faceSpider (agent_host):
+    agent_host.sendCommand("setPitch 45")
+
+def unfaceSpider (agent_host):
+    agent_host.sendCommand("setPitch 0")
+
+# take number of total actions, attack actions, attack actions on target, reward list, and life remaining
+# returns a 4-tuple of 4 evaluations
+def getStatsByNumbers (totalTime, attackTime, onTargetTime, listReward:list, life):
+    return (totalTime, onTargetTime/attackTime, sum(listReward)/totalTime, life)
+
+# takes action list, reward list, and life
+# returns a 4-tuple evaluations: total actions, positive reward rate on attack, avg. reward, life
+def getStatsByActionRewardList (listAction:list, listReward:list, life):
+    assert len(listAction) == len(listReward), "Action and Reward list has different length"
+    attackTime = 0
+    onTargetTime = 0
+    for i in range(len(listAction)):
+        if not listAction[i].startswith('go'):
+            attackTime += 1
+            if listReward[i] >= 0:
+                onTargetTime += 1
+    # change this!!!
+    filePath = "C:\\Users\\rdfzz\\Desktop\\Monster-Kill\\stats.csv"
+    with open(filePath, 'a') as iFile:
+        iFile.write(str(len(listAction)) + "\t" + str(onTargetTime/attackTime) + "\t" + str(sum(listReward)/len(listAction)) + "\t" + life + "\n")
+        iFile.close()
+    return (len(listAction), onTargetTime/attackTime, sum(listReward)/len(listAction), life)
