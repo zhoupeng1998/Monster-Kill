@@ -52,7 +52,7 @@ if __name__ == "__main__":
         print(agent_host.getUsage())
         exit(0)
     
-    iRepeat = 1000
+    iRepeat = 120
     agent = Agent()
 
     # repeat mission for 

@@ -98,8 +98,16 @@ def getStatsByNumbers (totalTime, attackTime, onTargetTime, listReward:list, lif
 
 # takes action list, reward list, and life
 # returns a 4-tuple evaluations: total actions, positive reward rate on attack, avg. reward, life
-def getStatsByActionRewardList (listAction:list, listReward:list, life):
-    assert len(listAction) == len(listReward), "Action and Reward list has different length"
+def getStatsByActionRewardList (numRound, listAction:list, listReward:list, life):
+    # assert len(listAction) == len(listReward), "Action and Reward list has different length"
+    if len(listAction) != len(listReward):
+        filePath = "C:\\Users\\rdfzz\\Desktop\\Monster-Kill\\err.txt"
+        with open(filePath, 'a') as iFile:
+            iFile.write("Error on round: " + str(numRound) + "\n")
+            iFile.write("Action list " + str(len(listAction)) + ": " + str(listAction) + "\n")
+            iFile.write("Reward list " + str(len(listReward)) + ": " + str(listReward) + "\n")
+            iFile.close()
+        return "Action and Reward list has different length"
     attackTime = 0
     onTargetTime = 0
     for i in range(len(listAction)):
@@ -110,6 +118,6 @@ def getStatsByActionRewardList (listAction:list, listReward:list, life):
     # change this!!!
     filePath = "C:\\Users\\rdfzz\\Desktop\\Monster-Kill\\stats.csv"
     with open(filePath, 'a') as iFile:
-        iFile.write(str(len(listAction)) + "\t" + str(onTargetTime/attackTime) + "\t" + str(sum(listReward)/len(listAction)) + "\t" + life + "\n")
+        iFile.write(str(len(listAction)) + "," + str(onTargetTime/attackTime) + "," + str(sum(listReward)/len(listAction)) + "," + str(life) + "\n")
         iFile.close()
     return (len(listAction), onTargetTime/attackTime, sum(listReward)/len(listAction), life)

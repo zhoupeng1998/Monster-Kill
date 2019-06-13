@@ -35,6 +35,7 @@ health_point = {'full':3,'high':4,'mid':5,'low':6}
 class Agent:
     # construct Agent object
     def __init__ (self, alpha=0.3, gamma=1, epsilon=0.5, n=1):
+        self.numRound = 0
         self.alpha = alpha
         self.gamma = gamma
         self.epsilon = epsilon
@@ -189,10 +190,7 @@ class Agent:
                         break
         return possible_actions[action]
     
-
-    
     # returns damage dealt to enemy
-
     def damageDone(self,agent_host,observations,action):
         if action == 'go_back' or action == 'go_front':
             return 0
@@ -269,7 +267,9 @@ class Agent:
     
     # reset agent parameters and weapon usage
     def resetAgent(self):
-        self.epsilon-=0.01
+        self.numRound += 1
+        if self.numRound > 50 and self.epsilon > 0:
+            self.epsilon-=0.01
         self.pastActions = []
         self.MonsterHeart = 20
         self.Heart = 20
@@ -324,7 +324,7 @@ class Agent:
             for t in range(sys.maxsize):
                 if t < T:
                     # print state and action
-                    #print(S[-1], ",", A[-1], end=' , ')
+                    print(S[-1], ",", A[-1], end=' , ')
                     # change direction and act
                     if aimflag == 1:
                         self.changeDirection(agent_host,observations)
@@ -380,6 +380,12 @@ class Agent:
                         self.updateQTable(tau, S, A, R, T,i)
                     done_update = True
                     break
+            # evaluate reward
+            if len(observations) > 1:
+                life = observations["Life"]
+            else:
+                life = 0
+            print(utils.getStatsByActionRewardList(self.numRound,A,R,life))
 
         if deadflag == 1:
             for i in range(len(S)-1):
