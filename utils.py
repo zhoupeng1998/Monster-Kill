@@ -28,11 +28,14 @@ enemies = set(['WitherSkeleton','Stray','Husk','Giant','Spider','Zombie','Skelet
                ,'PigZombie','WitherBoss','VillagerGolem','Guardian','Witch','EnderDragon'
                ,'Blaze','Ghast','Creeper','VindicationIllager','ZombieVillager','ElderGuardian'])
 
-action_list = ['shoot_0.4', 'shoot_0.7', 'attack_2', 'attack_3', 'go_back', 'go_front','aim']#,'aim'
+action_list = ['shoot_0.4', 'shoot_0.7', 'attack_2', 'attack_3', 'go_back', 'go_front','aim']
 action_list_aimed = ['shoot_0.4', 'shoot_0.7', 'attack_2', 'attack_3', 'go_back', 'go_front']
+action_list_no_diamond = ['shoot_0.4', 'shoot_0.7', 'attack_2', 'go_back', 'go_front', 'aim']
+action_list_no_diamond_aimed = ['shoot_0.4', 'shoot_0.7', 'attack_2', 'go_back', 'go_front']
+
 rewards_map = {'shoot':[-2,100000],'attack_2':[-1,100000],'attack_3':[-6.83,10],'go_back':[0,0],'go_front':[0,0],'aim':[0,0]}
 
-weapon_count_map = {'shoot':0,'attack_2':0,'attack_3':0,'go_back':0,'go_front':0}
+weapon_count_map = {'shoot':0,'attack_2':0,'attack_3':0,'go_back':0,'go_front':0,'aim':0}
 
 def getObservations (world_state) -> dict:
     if world_state.number_of_observations_since_last_state > 0:
