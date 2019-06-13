@@ -29,11 +29,8 @@ import sys
 import math
 import utils
 
-rewards_map = {'swap_1':[-2,30],'swap_2':[-1,16],'swap_3':[-1,22],'swap_4':[-3.22,27],'swap_5':[-5.63,10],'swap_6':[-6.83,43],'go_back':[0,0],'go_front':[0,0]}
 
-weapon_count_map = {'swap_1':0,'swap_2':0,'swap_3':0,'swap_4':0,'swap_5':0,'swap_6':0,'go_back':0,'go_front':0}
-
-enemies = set(['WitherSkeleton','Stray','Husk','Giant','Spider','Zombie','Skeleton','PigZombie','WitherBoss','VillagerGolem','Guardian','Witch','EnderDragon','Blaze','Ghast','Creeper','VindicationIllager','ZombieVillager','ElderGuardian'])
+health_point = {'full':3,'high':4,'mid':5,'low':6}
 
 class Agent:
     # construct Agent object
@@ -63,7 +60,7 @@ class Agent:
     def getMobDistance (self, zpos, entities):
         distList = list()
         for mob in entities:
-            if mob['name'] in enemies:
+            if mob['name'] in utils.enemies:
                 distList.append(abs(mob['z'] - zpos))
         if len(distList) > 0:
             return min(distList)
@@ -91,12 +88,19 @@ class Agent:
             floatDistance = 15
         elif floatDistance > 5:
             floatDistance = 10
-        return (int(floatDistance), life, 1)
-    
+        if 'LineOfSight' not in observations.keys():
+            return (int(floatDistance), life, 0)
+        if observations['LineOfSight']['hitType'] == 'entity':
+            return (int(floatDistance), life, 1)
+        else:
+            return (int(floatDistance), life, 0)
     # get all possible actions with current state
     # currently returns 7 actions for all states
     def getActions (self, state):
-        return utils.action_list
+        if state[2] == 0:
+            return utils.action_list
+        else:
+            return utils.action_list_aimed
 
     # let agent host do action
     def act (self, action, agent_host):
@@ -109,6 +113,9 @@ class Agent:
             agent_host.sendCommand('move -1')
             time.sleep(0.25)
             agent_host.sendCommand('move 0')
+        elif action == 'aim':
+            return 0
+        
         elif action.startswith('attack'):
             utils.weapon_count_map[action] += 1
             self.swapWeapon(int(action[7:]), agent_host)
@@ -182,32 +189,16 @@ class Agent:
                         break
         return possible_actions[action]
     
-    # turn facing to enemy, DEPRECATED, new: changeDirection
-    def faceEnemy(self,observations,agent_host):
-        for mob in observations['entities']:
-            if mob['name'] in enemies:
-                zomx = float(mob['x'])
-                zomy = float(mob['y'])
-                zomz = float(mob['z'])
-            if mob['name'] == 'Monster Killer':
-                agentx = float(mob['x'])
-                agenty = float(mob['y'])
-                agentz = float(mob['z'])
-        newx = agentx - zomx
-        newz = agentz - zomz
-        dis = self.getMobDistance(observations['ZPos'], observations['entities'])
-        c = newx/dis
-        #c = math.sqrt(math.pow(newx,2) + math.pow(newz,2))
-        A = math.acos(c)
-        angle = A * 180/3.1415926
+
     
     # returns damage dealt to enemy
+
     def damageDone(self,agent_host,observations,action):
         if action == 'go_back' or action == 'go_front':
             return 0
         if action.startswith('shoot'): # special care for shoot actions
             action = 'shoot'
-        damage = utils.rewards_map[action][0]
+        damage = -1
         life =1000000
         for mob in observations['entities']:
             if mob['name'] in utils.enemies:
@@ -216,10 +207,25 @@ class Agent:
             damage += (self.MonsterHeart - life)
             self.MonsterHeart = life
             return damage*3
+        
+        return damage
+    """
+    def damageDone(self,agent_host,observations,action):
+        if action == 'go_back' or action == 'go_front':
+            return 0
+
+        damage = 0
+        if (observations['DamageDealt'] > self.damageD):
+            damage = observations['DamageDealt'] - self.damageD
+            print(observations['DamageDealt'])
+            print(self.damageD)
+            self.damageD = observations['DamageDealt']
+
         return damage
 
+    """
     # return damage dealt by ememy
-    def receiveDamage(self,agent_host,observations):
+    def receiveDamage(self,agent_host,observations,state):
         total = 0
         for mob in observations['entities']:
             if mob['name'] == 'Monster Killer':
@@ -227,7 +233,7 @@ class Agent:
         if life < self.Heart:
             total = self.Heart-life
             self.Heart = life
-        return total*-4
+        return total*health_point[state[1]]
     
     # calculate weapon usage penalty
     def maxAttack(self,agent_host,observations,action):
@@ -245,14 +251,18 @@ class Agent:
         return -reward
     
     # calculate reward with damage, weapon penalty
-    def rewardCalculate(self,agent_host,observations,action):
+    def rewardCalculate(self,agent_host,observations,action,state):
         total = 0
-        if action == 'go_back' or action == 'go front':
-            total += 0.2
+        if action == 'go_back':
+            total += 2
+        elif action == 'go_front':
+            total += 2
+        elif action == 'aim':
+            return 10
         elif action.startswith('shoot'): # special care for shoot actions
             action = 'shoot'
         total += self.damageDone(agent_host,observations,action)
-        total += self.receiveDamage(agent_host,observations)
+        total += self.receiveDamage(agent_host,observations,state)
         total += self.maxAttack(agent_host,observations,action)
         #total += self.timedeclay()
         return total
@@ -274,19 +284,21 @@ class Agent:
         zz = 0
         ax = 0
         az = 0
+        
         for mob in observations['entities']:
-            if mob['name'] in utils.enemies:
-                zx = mob['x']
-                zz = mob['z']
-            elif mob['name'] == 'Monster Killer':
+            if mob['name'] == 'Monster Killer':
                 ax = mob['x']
                 az = mob['z']
-        utils.turnFacingByAgentTargetPosition(ax, az, zx, zz, agent_host)
+        mob = utils.getClostestMobPosition(ax,az,observations['entities'])
+        if (mob != -1):
+        
+            utils.turnFacingByAgentTargetPosition(ax, az, mob[0], mob[1], agent_host)
     
     # main loop
     def run(self,agent_host):
-        for action in weapon_count_map:
-            weapon_count_map[action] = 0
+        aimflag = 0
+        for action in utils.weapon_count_map:
+            utils.weapon_count_map[action] = 0
         deadflag = 0
         S, A, R = [],[],[]
         present_reward = 0
@@ -297,6 +309,10 @@ class Agent:
             observations = self.getObservations(world_state)
             while len(observations) <= 1:
                 observations = self.getObservations(world_state)
+            
+            for mob in observations['entities']:
+                if mob['name'] in utils.enemies:
+                    self.MonsterHeart = mob['life']
             s0 = self.getState(observations)
             possible_actions = self.getActions(s0)
             a0 = self.chooseActions(s0, possible_actions, self.epsilon)
@@ -308,22 +324,28 @@ class Agent:
             for t in range(sys.maxsize):
                 if t < T:
                     # print state and action
-                    print(S[-1], ",", A[-1], end=' , ')
+                    #print(S[-1], ",", A[-1], end=' , ')
                     # change direction and act
-                    self.changeDirection(agent_host,observations)
+                    if aimflag == 1:
+                        self.changeDirection(agent_host,observations)
+                        aimflag = 0
+                    if A[-1] == 'aim':
+                        aimflag = 1
+                        self.changeDirection(agent_host,observations)
+                    
                     self.act(A[-1],agent_host)
+                    
                     if A[-1][0] == 's':
                         time.sleep(0.7)
+                    if A[-1][0] == 'a':
+                        time.sleep(0.1)
                     world_state = agent_host.getWorldState()
                     for mob in observations['entities']:
                         if mob['name'] == 'Monster Killer':
                             life = mob['life']
                     self.Heart = life
+                    
                     observations = self.getObservations(world_state)
-                    #print("----------OBSERVATION----------")
-                    #print(observations)
-                    #print("----------OBSERVATION----------")
-                    #get observation
                     attempt = 0
                     while len(observations) <= 1:
                         observations = self.getObservations(world_state)
@@ -335,8 +357,9 @@ class Agent:
                         done_update = True
                         break
                     #get reward
-                    current_r = self.rewardCalculate(agent_host,observations,A[-1])
-                    print(current_r)
+                   
+                    current_r = self.rewardCalculate(agent_host,observations,A[-1],S[-1])
+                    #print(current_r)
                     R.append(current_r)
                     if not observations['IsAlive'] or S[-1][0] < 0:
                         # Terminating state
@@ -357,3 +380,9 @@ class Agent:
                         self.updateQTable(tau, S, A, R, T,i)
                     done_update = True
                     break
+
+        if deadflag == 1:
+            for i in range(len(S)-1):
+                tau = tau + 1
+                self.updateQTable(tau, S, A, R, T,i)
+

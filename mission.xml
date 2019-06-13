@@ -19,9 +19,10 @@
             <DrawingDecorator>
                 <DrawCuboid type="diamond_block" x1="-2" y1="254" z1="-2" x2="2" y2="254" z2="2"/>
                 
-                <DrawCuboid type="glowstone" x1="15" y1="230" z1="20" x2="36" y2="240" z2="41"/>
-                <DrawCuboid type="glowstone" x1="15" y1="241" z1="20" x2="36" y2="241" z2="41"/>
-                <DrawCuboid type="air" x1="16" y1="231" z1="21" x2="35" y2="240" z2="40"/>
+
+                <DrawCuboid type="glowstone" x1="-150" y1="230" z1="-20" x2="36" y2="230" z2="41"/>
+                
+                <DrawCuboid type="air" x1="-160" y1="231" z1="-21" x2="35" y2="240" z2="40"/>
 
                 <!--<DrawItem x="25" y="235" z="38" type="bow"/>
                 <DrawItem x="25" y="235" z="38" type="arrow"/>-->
@@ -40,7 +41,6 @@
                 <InventoryItem slot="0" type="bow"/>
                 <InventoryItem slot="1" type="wooden_sword"/>
                 <InventoryItem slot="2" type="diamond_sword"/>
-                <InventoryItem slot="3" type="rotten_flesh"/>
                 <!--
                 <InventoryItem slot="2" type="stone_sword"/>
                 <InventoryItem slot="3" type="iron_sword"/>
@@ -63,7 +63,7 @@
             <ObservationFromNearbyEntities>
                 <Range name="entities" xrange="40" yrange="40" zrange="40"/>
             </ObservationFromNearbyEntities>
-            <!--<ObservationFromRay/>-->
+            <ObservationFromRay/>
             <VideoProducer want_depth="true" viewpoint="0">
                 <Width>800</Width>
                 <Height>500</Height>
