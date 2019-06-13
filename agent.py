@@ -69,7 +69,7 @@ class Agent:
             return -1
 
     # get current state with observation
-    # current assumes enemies are all aimed!
+    # (distance, health point, aimed or not)
     def getState (self, observations):
         floatDistance = self.getMobDistance(observations['ZPos'], observations['entities'])
         floatLife = observations["Life"]
@@ -99,8 +99,13 @@ class Agent:
     # currently returns 7 actions for all states
     def getActions (self, state):
         if state[2] == 0:
+            #if usage of diamond exceed the maximum time
+            if utils.weapon_count_map['attack_3'] >= utils.rewards_map['attack_3'][1]:
+                return utils.action_list_no_diamond
             return utils.action_list
         else:
+            if utils.weapon_count_map['attack_3'] >= utils.rewards_map['attack_3'][1]:
+                return utils.action_list_no_diamond_aimed
             return utils.action_list_aimed
 
     # let agent host do action
@@ -231,8 +236,9 @@ class Agent:
         if life < self.Heart:
             total = self.Heart-life
             self.Heart = life
-        return total*health_point[state[1]]
+        return -total*health_point[state[1]]
     
+    """
     # calculate weapon usage penalty
     def maxAttack(self,agent_host,observations,action):
         if action.startswith('shoot'): # special care for shoot actions
@@ -242,6 +248,7 @@ class Agent:
         if utils.weapon_count_map[action] > utils.rewards_map[action][1]:
             return -20
         return 0
+    """
     
     # deduct reward calculated by accumulated number round of actions
     def timeDecay(self):
@@ -256,12 +263,12 @@ class Agent:
         elif action == 'go_front':
             total += 2
         elif action == 'aim':
-            return 10
+            return 4
         elif action.startswith('shoot'): # special care for shoot actions
             action = 'shoot'
         total += self.damageDone(agent_host,observations,action)
         total += self.receiveDamage(agent_host,observations,state)
-        total += self.maxAttack(agent_host,observations,action)
+        #total += self.maxAttack(agent_host,observations,action)
         #total += self.timedeclay()
         return total
     
