@@ -28,9 +28,9 @@ enemies = set(['WitherSkeleton','Stray','Husk','Giant','Spider','Zombie','Skelet
                ,'PigZombie','WitherBoss','VillagerGolem','Guardian','Witch','EnderDragon'
                ,'Blaze','Ghast','Creeper','VindicationIllager','ZombieVillager','ElderGuardian'])
 
-action_list = ['shoot_0.4', 'shoot_0.6', 'shoot_0.9', 'attack_2', 'attack_3', 'go_back', 'go_front']
-
-rewards_map = {'shoot':[-2,30],'attack_2':[-1,16],'attack_3':[-6.83,43],'go_back':[0,0],'go_front':[0,0]}
+action_list = ['shoot_0.4', 'shoot_0.7', 'attack_2', 'attack_3', 'go_back', 'go_front','aim']#,'aim'
+action_list_aimed = ['shoot_0.4', 'shoot_0.7', 'attack_2', 'attack_3', 'go_back', 'go_front']
+rewards_map = {'shoot':[-2,100000],'attack_2':[-1,100000],'attack_3':[-6.83,10],'go_back':[0,0],'go_front':[0,0],'aim':[0,0]}
 
 weapon_count_map = {'shoot':0,'attack_2':0,'attack_3':0,'go_back':0,'go_front':0}
 
@@ -43,7 +43,7 @@ def getObservations (world_state) -> dict:
 
 # untested
 # returns 2-tuple (MobX, MobZ)
-def getClostestMobPosition (self, agtX, agtZ, entities):
+def getClostestMobPosition (agtX, agtZ, entities):
     distDict = dict()
     for mob in entities:
         if mob['name'] in enemies:

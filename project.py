@@ -90,10 +90,18 @@ if __name__ == "__main__":
         # Mission running
         # let agent hunger s.t. no life recovery
         agent_host.sendCommand("chat " +  "/effect @p minecraft:hunger 5 201")
+        agent_host.sendCommand("chat " + "/replaceitem entity @p slot.armor.chest minecraft:diamond_chestplate 1 0")
+        agent_host.sendCommand("chat " + "/replaceitem entity @p slot.armor.head minecraft:diamond_helmet 1 0")
+        agent_host.sendCommand("chat " + "/replaceitem entity @p slot.armor.legs minecraft:diamond_leggings 1 0")
+        agent_host.sendCommand("chat " + "/replaceitem entity @p slot.armor.feet minecraft:diamond_boots 1 0")
+        
+        
         time.sleep(2)
         observations = agent.getObservations(world_state)
         # generate enemy after hunger
-        agent_host.sendCommand("chat " +  "/summon minecraft:creeper ~ ~0 ~15")
+        agent_host.sendCommand("chat " +  "/summon villager_golem ~2 ~0 ~10")
+        
+
         time.sleep(0.5)
 
         agent.run(agent_host)
@@ -124,7 +132,8 @@ if __name__ == "__main__":
             #else:
 
         # reset agent parameters
-        agent.epsilon-=0.01
+        if i > 50:
+            agent.epsilon-=0.01
         agent.pastActions = []
         agent.MonsterHeart = 20
         agent.Heart = 20
