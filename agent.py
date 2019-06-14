@@ -277,6 +277,8 @@ class Agent:
         self.numRound += 1
         if self.numRound > 50 and self.epsilon > 0:
             self.epsilon-=0.01
+        elif self.epsilon < 0:
+            self.epsilon = 0
         self.pastActions = []
         self.MonsterHeart = 20
         self.Heart = 20
@@ -387,15 +389,15 @@ class Agent:
                         self.updateQTable(tau, S, A, R, T,i)
                     done_update = True
                     break
-            # evaluate reward
-            if len(observations) > 1:
-                life = observations["Life"]
-            else:
-                life = 0
-            print(utils.getStatsByActionRewardList(self.numRound,A,R,life))
-
         if deadflag == 1:
             for i in range(len(S)-1):
                 tau = tau + 1
                 self.updateQTable(tau, S, A, R, T,i)
+                    # evaluate reward
+        #print(observations)
+        if len(observations) > 1:
+            life = observations["Life"]
+        else:
+            life = 0
+        print(utils.getStatsByActionRewardList(self.numRound,A,R[1:],life))
 
