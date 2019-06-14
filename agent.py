@@ -113,11 +113,11 @@ class Agent:
         self.action+=1
         if action == 'go_front':
             agent_host.sendCommand('move 1')
-            time.sleep(0.25)
+            time.sleep(1)
             agent_host.sendCommand('move 0')
         elif action == 'go_back':
             agent_host.sendCommand('move -1')
-            time.sleep(0.25)
+            time.sleep(1)
             agent_host.sendCommand('move 0')
         elif action == 'aim':
             return 0
@@ -154,7 +154,7 @@ class Agent:
         agent_host.sendCommand("use 0")
     
     # update Q-table, performs relevant updates for state tau.
-    def updateQTable(self, tau, S, A, R, T,i):
+    def updateQTable(self, tau, S, A, R, T,i,n):
         """
             tau: <int>  state index to update
             S:   <dequqe>   states queue
@@ -164,14 +164,23 @@ class Agent:
             """
 
         
-        curr_s, curr_a, curr_r = S[i], A[i], R[i+1]
-        
+        curr_s, curr_a = S[i], A[i]
+
+            #print(len(S),len(A),len(R))
         #G = sum([self.gamma ** i * R[i] for i in range(len(S))])
         #if tau + self.n < T:
         #    G += self.gamma ** self.n * self.q_table[S[-1]][A[-1]]
-        
+        if len(A) - i < n:
+            reward = 0
+            for a in range(len(A) - i):
+                reward += R[i+1+a]
+    
+        else:
+            reward = 0
+            for a in range(n):
+                reward += R[i+1+a]
         old_q = self.q_table[curr_s][curr_a]
-        self.q_table[curr_s][curr_a] = old_q + self.alpha * (curr_r - old_q)
+        self.q_table[curr_s][curr_a] = old_q + self.alpha * (reward - old_q)
 
     # agent choose actions among possible_action list
     def chooseActions(self,curr_state, possible_actions, eps):
@@ -189,6 +198,7 @@ class Agent:
                 action = random.randint(0, len(possible_actions) - 1)
             else:
                 a = sortedlist[0][0]
+                action = 0
                 for i in range(len(possible_actions)):
                     if a == possible_actions[i]:
                         action = i
@@ -263,7 +273,7 @@ class Agent:
     
     # calculate reward with damage, weapon penalty
     def rewardCalculate(self,agent_host,observations,action,state):
-        total = 0
+        total = -1
         if action == 'go_back':
             total += 2
         elif action == 'go_front':
@@ -368,14 +378,17 @@ class Agent:
                         if attempt == 10:
                             deadflag = 1
                             break
+
+                    #get reward
                     if deadflag == 1:
                         done_update = True
+                        S.append('Term State')
+                        R.append(0)
                         break
-                    #get reward
-                   
                     current_r = self.rewardCalculate(agent_host,observations,A[-1],S[-1])
                     #print(current_r)
                     R.append(current_r)
+
                     if not observations['IsAlive'] or S[-1][0] < 0:
                         # Terminating state
                         T = t + 1
@@ -392,13 +405,13 @@ class Agent:
                 if tau == T - 1:
                     for i in range(len(S)-1):
                         tau = tau + 1
-                        self.updateQTable(tau, S, A, R, T,i)
+                        self.updateQTable(tau, S, A, R, T,i,3)
                     done_update = True
                     break
         if deadflag == 1:
             for i in range(len(S)-1):
                 tau = tau + 1
-                self.updateQTable(tau, S, A, R, T,i)
+                self.updateQTable(tau, S, A, R, T,i,3)
                     # evaluate reward
         #print(observations)
         if len(observations) > 1:

@@ -20,9 +20,9 @@
                 <DrawCuboid type="diamond_block" x1="-2" y1="254" z1="-2" x2="2" y2="254" z2="2"/>
                 
 
-                <DrawCuboid type="glowstone" x1="-150" y1="230" z1="-20" x2="36" y2="230" z2="41"/>
+                <DrawCuboid type="bedrock" x1="-150" y1="230" z1="-20" x2="150" y2="230" z2="20"/>
                 
-                <DrawCuboid type="air" x1="-160" y1="231" z1="-21" x2="35" y2="240" z2="40"/>
+                <DrawCuboid type="air" x1="-160" y1="231" z1="-21" x2="150" y2="240" z2="20"/>
 
                 <!--<DrawItem x="25" y="235" z="38" type="bow"/>
                 <DrawItem x="25" y="235" z="38" type="arrow"/>-->
@@ -35,13 +35,14 @@
     <AgentSection mode="Survival">
         <Name>Monster Killer</Name>
         <AgentStart>
-            <Placement pitch="0" x="25.5" y="231" yaw="0" z="25"/>
+            <Placement pitch="0" x="130" y="231" yaw="-90" z="0"/>
             <!--<Placement pitch="0" x="25.5" y="231" yaw="0" z="34.5"/>-->
             <Inventory>
+                <!--
                 <InventoryItem slot="0" type="bow"/>
                 <InventoryItem slot="1" type="wooden_sword"/>
                 <InventoryItem slot="2" type="diamond_sword"/>
-                <!--
+                
                 <InventoryItem slot="2" type="stone_sword"/>
                 <InventoryItem slot="3" type="iron_sword"/>
                 <InventoryItem slot="4" type="golden_sword"/>

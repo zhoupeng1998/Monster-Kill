@@ -89,19 +89,27 @@ if __name__ == "__main__":
 
         # Mission running
         # let agent hunger s.t. no life recovery
+        
+        agent_host.sendCommand("chat " +  "/time set 12000")
         agent_host.sendCommand("chat " +  "/effect @p minecraft:hunger 5 201")
-        #agent_host.sendCommand("chat " + "/replaceitem entity @p slot.armor.chest minecraft:diamond_chestplate 1 0")
-        #agent_host.sendCommand("chat " + "/replaceitem entity @p slot.armor.head minecraft:diamond_helmet 1 0")
-        #agent_host.sendCommand("chat " + "/replaceitem entity @p slot.armor.legs minecraft:diamond_leggings 1 0")
-        #agent_host.sendCommand("chat " + "/replaceitem entity @p slot.armor.feet minecraft:diamond_boots 1 0")
+        agent_host.sendCommand("chat " + "/replaceitem entity @p slot.armor.chest minecraft:diamond_chestplate 1 0")
+        agent_host.sendCommand("chat " + "/replaceitem entity @p slot.armor.head minecraft:diamond_helmet 1 0")
+        agent_host.sendCommand("chat " + "/replaceitem entity @p slot.armor.legs minecraft:diamond_leggings 1 0")
+        agent_host.sendCommand("chat " + "/replaceitem entity @p slot.armor.feet minecraft:diamond_boots 1 0")
+        agent_host.sendCommand("chat " + "/give @a bow 1 0")# {ench:[{id:48,lvl:5}]}")
+        time.sleep(0.1)
+        agent_host.sendCommand("chat " + "/give @a wooden_sword 1 0") #{ench:[{id:16,lvl:5},{id:19,lvl:2}]})
+        time.sleep(0.1)
+        agent_host.sendCommand("chat " + "/give @a diamond_sword 1 0") #{ench:[{id:16,lvl:5},{id:19,lvl:2}]})
+        
         
         
         time.sleep(2)
         observations = agent.getObservations(world_state)
         # generate enemy after hunger
         #agent_host.sendCommand("chat " +  "/summon minecraft:witch ~ ~0 ~15")
-        #agent_host.sendCommand("chat " +  "/summon villager_golem ~2 ~0 ~10")
-        agent_host.sendCommand("chat " +  "/summon zombie ~2 ~0 ~5")
+        agent_host.sendCommand("chat " +  "/summon vindication_illager ~5 ~0 ~0")
+        #agent_host.sendCommand("chat " +  "/summon zombie ~2 ~0 ~5")
         time.sleep(0.5)
 
         agent.run(agent_host)
