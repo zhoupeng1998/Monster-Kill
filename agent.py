@@ -202,10 +202,16 @@ class Agent:
         if action.startswith('shoot'): # special care for shoot actions
             action = 'shoot'
         damage = -1
-        life =1000000
+        life = -1
+        mobAlive = False
         for mob in observations['entities']:
             if mob['name'] in utils.enemies:
                 life = mob['life']
+                mobAlive = True
+        if not mobAlive:
+            damage += self.MonsterHeart
+            self.MonsterHeart = 0
+            return damage*3
         if life < self.MonsterHeart:
             damage += (self.MonsterHeart - life)
             self.MonsterHeart = life
