@@ -100,6 +100,8 @@ def getStatsByNumbers (totalTime, attackTime, onTargetTime, listReward:list, lif
 # returns a 4-tuple evaluations: total actions, positive reward rate on attack, avg. reward, life
 def getStatsByActionRewardList (numRound, listAction:list, listReward:list, life):
     # assert len(listAction) == len(listReward), "Action and Reward list has different length"
+    while len(listAction) > len(listReward):
+        listAction.pop()
     if len(listAction) != len(listReward):
         filePath = "C:\\Users\\rdfzz\\Desktop\\Monster-Kill\\err.txt"
         with open(filePath, 'a') as iFile:
