@@ -34,7 +34,7 @@ health_point = {'full':3,'high':4,'mid':5,'low':6}
 
 class Agent:
     # construct Agent object
-    def __init__ (self, alpha=0.3, gamma=1, epsilon=0.5, n=1):
+    def __init__ (self, alpha=0.3, gamma=1, epsilon=0.45, n=1):
         self.numRound = 0
         self.alpha = alpha
         self.gamma = gamma
@@ -113,11 +113,11 @@ class Agent:
         self.action+=1
         if action == 'go_front':
             agent_host.sendCommand('move 1')
-            time.sleep(1)
+            time.sleep(0.75)
             agent_host.sendCommand('move 0')
         elif action == 'go_back':
             agent_host.sendCommand('move -1')
-            time.sleep(1)
+            time.sleep(0.75)
             agent_host.sendCommand('move 0')
         elif action == 'aim':
             return 0
@@ -277,7 +277,7 @@ class Agent:
         if action == 'go_back':
             total += 2
         elif action == 'go_front':
-            total += 2
+            total += 2.1
         elif action == 'aim':
             return 4
         elif action.startswith('shoot'): # special care for shoot actions
@@ -349,7 +349,7 @@ class Agent:
             for t in range(sys.maxsize):
                 if t < T:
                     # print state and action
-                    print(S[-1], ",", A[-1], end=' , ')
+                    #print(S[-1], ",", A[-1], end=' , ')
                     # change direction and act
                     if aimflag == 1:
                         self.changeDirection(agent_host,observations)
@@ -410,13 +410,12 @@ class Agent:
                     break
         if deadflag == 1:
             for i in range(len(S)-1):
-                tau = tau + 1
-                self.updateQTable(tau, S, A, R, T,i,3)
+                self.updateQTable(0, S, A, R, T,i,3)
                     # evaluate reward
         #print(observations)
         if len(observations) > 1:
             life = observations["Life"]
         else:
             life = 0
-        print(utils.getStatsByActionRewardList(self.numRound,A,R[1:],life))
+        utils.getStatsByActionRewardList(self.numRound,A,R[1:],life)
 
