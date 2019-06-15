@@ -23,7 +23,7 @@ LINK HERE
 - When the agent starts learning, all values in Q-table are zero, the best action is unknown, so we must weigh exploration and exploitation rate properly. We use epsilon greedy policy: when the agent chooses an action, it generates a random number. If the number is greater than epsilon, it will exploit the known information by choosing the action with the best expected reward; otherwise, it will explore by choosing a random action. 
 - We set epsilon to be 0.5 when the agent begins learning. Starting at the 50th round, we decrease epsilon by 0.1 at the end of each episode until it reaches zero. Then we continue to learn for 50 more episodes before the agent stops learning.
 - We update Q-table after an episode of all actions. The updated Q-value for an action in a state is affected by the discounted cumulative reward given the state and action. Here is an image for the equation below:
-    ![Image Text](https://raw.githubusercontent.com/zhoupeng1998/Monster-Kill-Resource/master/final-img/fig1.png)
+  - ![Image Text](https://raw.githubusercontent.com/zhoupeng1998/Monster-Kill-Resource/master/final-img/fig1.png)
 
 #### State Define
 - We define states with three factors:
