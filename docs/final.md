@@ -4,7 +4,7 @@ title:  Final Report
 ---
 
 ### Video
-<iframe width="951" height="535" src="https://www.youtube.com/embed/32yJBvLWftQ" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="640" height="360" src="https://www.youtube.com/embed/32yJBvLWftQ" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 ### Project Summary
 - Is it frustrating to be in trouble of the high damage taken by enemies in a dark night? Would it be nice to kill monsters smartly with less time and resources? Finding the best way to beat enemies with the lowest resource and damage taken cost is not easy for new Minecraft players, but we can use AI to learn an optimal policy to kill monsters.
