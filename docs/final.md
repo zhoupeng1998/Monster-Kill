@@ -50,12 +50,12 @@ LINK HERE
   2. The damage was done on the enemy. This is calculated by the life deduction of the enemy times some constant because we would like to magnitude the positive rewards of attacking enemy successfully. If the enemy died caused by its self explosion or falling damage, it also counts as the damage dealt on the enemy by the agent. Let the reward of damage taken Y = cx, where c is a constant that might vary from different enemies and x is the life deduction of the enemy. For instance, if the agent makes a close attack using a diamond sword and cause 7 points reduce to the zombie’s health points, then the rewards would be 3 x 7 = +21 to reward the action.
   3. Life point loss of the agent. If the agent loses life points because of the attack by the enemy, the reward would be highly related to the current life status in the state and calculated according to the table below.
   
-   |Health Points left in State|Reward Calculation H with x = life point loss|
-   |-|-|
-   |Full|H = -3x|
-   |High|H = -4x|
-   |Medium|H = -5x|
-   |Low|H = -6x|
+   |Health Points left in State| |Reward Calculation H with x = life point loss|
+   |-|-|-|
+   |Full| |H = -3x|
+   |High| |H = -4x|
+   |Medium| |H = -5x|
+   |Low| |H = -6x|
    
   - We would like to agent to balance whether he should take risks to attack enemies. If the agent’s life is categorized as High or Full, then it is ok for him to take some risks by moving forward to attack. Therefore, if the agent receives damage from the enemy, but attacks the enemy successfully, its reward would not necessarily always be negative. However, if the agent’s current HP is Low or Medium, the cost of losing more blood would be very expensive because the agent should also learn how to escape from the enemy’s attack.
   4. Time costs. Rewards of time cost are calculated by a linear function given that more time cost would lead to more costs. Therefore, we define T = - (0.5 + 0.1z), where z is the number of actions it has already made in order to punish more actions.
